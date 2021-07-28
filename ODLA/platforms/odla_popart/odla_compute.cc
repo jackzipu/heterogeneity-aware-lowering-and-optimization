@@ -62,7 +62,7 @@ SingleComp* SingleComp::instance = nullptr;
 std::mutex SingleComp::instance_mutex;
 thread_local odla_computation g_comp = SingleComp::get_instance()->get_comp();
 
-#define PIPELINE_MODE "sequence"  //This version run a pipeline example
+#define PIPELINE_MODE "pipeline"  //This version run a pipeline example
 
 static std::shared_ptr<popart::DeviceInfo> AcquireAvailableDevice(
     int num_devices) {
