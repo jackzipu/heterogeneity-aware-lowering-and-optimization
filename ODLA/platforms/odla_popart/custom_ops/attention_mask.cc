@@ -48,7 +48,7 @@ public:
     if (dataType == poplar::HALF)
         outInfo(0) = {"FLOAT16", outShape};
     else
-        outInfo(0) = {"FLOAT32", outShape};
+        outInfo(0) = {"FLOAT", outShape};
     }
 
     std::unique_ptr<Op> clone() const final {
