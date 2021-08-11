@@ -71,7 +71,7 @@ odla_status odla_CreateComputation(odla_computation* comp) {
     }
   }
   //Read the config file
-  PopartConfig::instance()->load_config("/home/jackz/repos/heterogeneity-aware-lowering-and-optimization/ODLA/platforms/odla_popart/config.json");
+  PopartConfig::instance()->load_config("/mnt/jingaoz/halo/ODLA/platforms/odla_popart/config.json");
   _odla_computation::instance()->set_executor();
   QManager::instance()->createQ(PopartConfig::instance()->queue_type());
   QManager::instance()->getQ()->init(PopartConfig::instance()->queue_capacity());

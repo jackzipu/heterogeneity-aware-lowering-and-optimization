@@ -1,7 +1,8 @@
 {
+    "amp":0.445,
     "version":"1.0.0",
     "batch_per_step":10,
-    "execution_mode":"pipeline",
+    "execution_mode":"sequence",
     "ipu_num":2,
     "load_onnx":false,
     "load_onnx_path":"path",
@@ -13,6 +14,6 @@
         "^layer2[0-3]_" : [1, 1],
         "^squad_"       : [1, 1]
     },
-    "save_model" : true,
+    "save_model" : false,
     "save_model_path":"pipeline_test.onnx"
 }
