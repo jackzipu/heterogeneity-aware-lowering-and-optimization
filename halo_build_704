@@ -1,0 +1,15 @@
+#!/bin/bash
+rm -rf build_704/
+mkdir -p build_704
+cd build_704
+POPLAR_DIR=/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/poplar-centos_7_6-2.2.0+172375-8865692c4e
+POPLAR_ROOT=/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/poplar-centos_7_6-2.2.0+172375-8865692c4e
+POPART_ROOT=/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/popart-centos_7_6-2.2.1+172375-8865692c4e
+POPLAR_VERSION=centos_7_6-2.2.0+172375-8865692c4e
+unset POPLAR_SDK_ENABLED
+source $POPLAR_DIR/enable.sh
+source $POPART_ROOT/enable.sh
+CPATH=/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/popart-centos_7_6-2.2.1+172375-8865692c4e/include:/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/poplar-centos_7_6-2.2.0+172375-8865692c4e/include
+LD_LIBRARY_PATH=/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/popart-centos_7_6-2.2.1+172375-8865692c4e/lib64:/sdk/poplar_sdk-centos_7_6-2.2.1+704-62041451e9/poplar-centos_7_6-2.2.0+172375-8865692c4e/lib64:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.252.b09-2.1.alios7.x86_64/jre/lib/amd64/server/:/usr/local/nvidia_440_89:/usr/local/cuda::/usr/lib64/python2.7/site-packages/tensorflow_core:/usr/lib64/python2.7/site-packages/tensorflow_core/python:/nvidia_mock:/online/nvidia:/worker_config/plugin:/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/local_workdir/data/worker_config/plugin:/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib:/usr/local/cuda/lib64:/usr/local/TensorRT-7.2.1.6/lib/::/usr/lib64/python2.7/site-packages/tensorflow_core:/usr/lib64/python2.7/site-packages/tensorflow_core/python:/nvidia_mock:/online/nvidia:/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib
+cmake -G Ninja .. -DHALO_USE_TIDY_CHECK=OFF -DHALO_GEN_DOCS=OFF -DPOPLAR_ROOT=$POPLAR_ROOT -DPOPLAR_VERSION=$POPLAR_VERSION -DPOPART_ROOT=$POPART_ROOT -DODLA_BUILD_POPART_USE_CXX11ABI=OFF -DODLA_BUILD_POPART_CUSTOM_OPS=ON -DHALO_BUILD_RTLIB=OFF -DODLA_BUILD_TRT=OFF -DODLA_BUILD_XNNPACK=OFF -DODLA_BUILD_EIGEN=OFF -DODLA_BUILD_DNNL=OFF -DCMAKE_BUILD_TYPE=Debug -DHALO_USE_STATIC_PROTOBUF=ON && ninja
+#cmake -DCMAKE_BUILD_TYPE=Release -DHALO_GEN_DOCS=OFF -DHALO_USE_TIDY_CHECK=OFF -DODLA_BUILD_TRT=OFF -DPOPLAR_ROOT=$POPLAR_ROOT -DPOPLAR_VERSION=$POPLAR_VERSION -G Ninja ..
