@@ -286,14 +286,23 @@ extern odla_value odla_LogSoftmax(odla_value input, odla_int32 axis,
                           g_comp->builder->getTensorShape(result)},
                          name);
 }
-
+/*
+odla_LSTM(odla_value input, odla_value_shape weight_dims, odla_value W,
+          odla_value R, odla_value B, odla_value sequence_lens,
+		            odla_value initial_h, odla_value initial_c, odla_value P,
+					          odla_int32 hidden_size, odla_rnn_direction direction,
+							            odla_rnn_outputs outputs, const odla_value_ids value_id);
+ * */
 odla_values odla_LSTM(odla_value input, odla_value_shape weight_dims,
                       odla_value W, odla_value R, odla_value B,
-                      odla_uint32 seq_len, odla_int32 hidden_size,
+                      odla_value seqence_lens, 
+					  odla_value initial_h, odla_value initial_c, odla_value P,
+					  odla_int32 hidden_size,
                       odla_rnn_direction direction, odla_rnn_outputs outputs,
-                      const odla_value_id value_id) {
+                      const odla_value_ids value_id) {
   const auto& name =
-      value_id ? std::string(reinterpret_cast<const char*>(value_id)) : "LSTM";
+      value_id.size ? std::string(reinterpret_cast<const char*>(value_id.value_ids[0])) : "LSTM";
+  std::cout << "name of LSTM " << name << std::endl;
   std::string direction_name = GetDirectionName(direction);
   int input_forget = 0;
 
@@ -305,6 +314,12 @@ odla_values odla_LSTM(odla_value input, odla_value_shape weight_dims,
       std::vector<std::string>(), // activations
       nonstd::optional<float>(),  // clip
       direction_name, hidden_size, input_forget, name);
+  std::cout << "The shapes are: " <<std::endl;
+  for(int i=0; i < 3; i++) {
+    for(auto& v:g_comp->builder->getTensorShape(outs[i]))
+	  std::cout << v << ", ";
+	std::cout << std::endl;
+  }
   odla_value value_1 =
       new _odla_value(outs[0],
                       {g_comp->builder->getTensorDataType(outs[0]),
@@ -359,28 +374,28 @@ odla_value odla_MaxPool(odla_value input, odla_memory_layout input_layout,
                          name);
 }
 
-odla_value odla_PRelu(odla_value input, odla_float32 slope,
+odla_value odla_PRelu(odla_value input, odla_value slope,
                       const odla_value_id value_id) {
   const auto& name =
       value_id ? std::string(reinterpret_cast<const char*>(value_id)) : "PRelu";
 
-  std::vector<int64_t> input_shape =
-      g_comp->builder->getTensorShape(input->tensor_id);
-  int mul_total = 1;
-  int rank = input_shape.size();
-  for (int i = 0; i < rank; ++i) {
-    mul_total *= input_shape[i];
-  }
-  std::vector<float> sloap_tmp(mul_total, slope);
-  odla_value_shape dim_shape;
-  dim_shape.size = rank;
-  memcpy(dim_shape.dims, input_shape.data(), rank);
-  auto sloap =
-      odla_CreateConstant({ODLA_FLOAT32, dim_shape}, sloap_tmp.data(),
-                          (const odla_value_id)(name + "_sloap").c_str());
+  //std::vector<int64_t> input_shape = input->tensor_info.shape();
+  //    g_comp->builder->getTensorShape(input->tensor_id);
+  //int mul_total = 1;
+  //int rank = input_shape.size();
+  //for (int i = 0; i < rank; ++i) {
+  //  mul_total *= input_shape[i];
+  //}
+  //std::vector<float> sloap_tmp(mul_total, slope);
+  //odla_value_shape dim_shape;
+  //dim_shape.size = rank;
+  //memcpy(dim_shape.dims, input_shape.data(), rank);
+  //auto sloap =
+  //    odla_CreateConstant({ODLA_FLOAT32, dim_shape}, sloap_tmp.data(),
+  //                        (const odla_value_id)(name + "_sloap").c_str());
 
   popart::TensorId result = g_comp->builder->aiOnnxOpset10().prelu(
-      {input->tensor_id, sloap->tensor_id}, name);
+      {input->tensor_id, slope->tensor_id}, name);
   return new _odla_value(result,
                          {g_comp->builder->getTensorDataType(result),
                           g_comp->builder->getTensorShape(result)},
@@ -425,12 +440,13 @@ odla_value odla_Tanh(odla_value input, const odla_value_id value_id) {
                          name);
 }
 
-odla_value odla_TopK(odla_value input, odla_uint32 K, odla_bool largest,
+odla_values odla_TopK(odla_value input, odla_uint32 K, odla_bool largest,
                      odla_bool sorted, odla_uint32 axis,
                      odla_value_type output_value_type,
-                     const odla_value_id value_id) {
+					 odla_value_type output_value_index_type,
+                     const odla_value_ids value_ids) {
   const auto& name =
-      value_id ? std::string(reinterpret_cast<const char*>(value_id)) : "Topk";
+      value_ids.size ? std::string(reinterpret_cast<const char*>(value_ids.value_ids[0])) : "Topk";
   int64_t K_value[] = {K};
   auto K_tensor =
       odla_CreateConstant({ODLA_INT64, {.size = 1, .dims = {1}}}, K_value,
@@ -439,10 +455,11 @@ odla_value odla_TopK(odla_value input, odla_uint32 K, odla_bool largest,
   std::vector<popart::TensorId> results = g_comp->builder->aiOnnxOpset10().topk(
       {input->tensor_id, K_tensor->tensor_id}, axis, name);
 
-  return new _odla_value(results[0],
+  return odla_values{.size=1, 
+	      .values= {new _odla_value(results[0],
                          {g_comp->builder->getTensorDataType(results[0]),
                           g_comp->builder->getTensorShape(results[0])},
-                         name);
+                         name)}};
 }
 
 odla_values odla_PostProcess(odla_value orig_img_w, odla_value orig_img_h,

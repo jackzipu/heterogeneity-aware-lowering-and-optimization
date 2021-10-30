@@ -86,6 +86,14 @@ odla_status odla_CreateComputation(odla_computation* comp) {
       return ODLA_DL_ERROR;
     }
   }
+  static void* custom_ops_handle = nullptr;
+  if (custom_ops_handle == nullptr) {
+    custom_ops_handle = dlopen("custom_ops.so", RTLD_NOW | RTLD_GLOBAL);
+    if (custom_ops_handle == nullptr) {
+      assert(0);
+      return ODLA_DL_ERROR;
+    }
+  }
   // Read the config file
   PopartConfig::instance()->load_config(std::getenv("ODLA_POPART_CONFIG"));
   _odla_computation::instance()->set_executor();
@@ -244,6 +252,9 @@ odla_status odla_BindToOutputById(const odla_value_id value_id,
                                   odla_void* data_ptr, odla_context context) {
   if (!context->hold("odla_BindToOutputById")) return ODLA_FAILURE;
   std::string name(reinterpret_cast<const char*>(value_id));
+  std::cout << "BIndToOutputById with id: "  << name << std::endl;
+  for(auto &v : context->comp->outputs_map)
+	  std::cout << v.first << " <-> " << v.second << std::endl;
   return odla_BindToOutput(context->comp->outputs_map[name], data_ptr, context);
 }
 

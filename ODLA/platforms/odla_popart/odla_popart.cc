@@ -26,6 +26,7 @@
 #include <mutex>
 #include <popart/builder.hpp>
 #include <popart/dataflow.hpp>
+#include <poplar/exceptions.hpp>
 
 #include "odla_pipeline.h"
 #include "onnx/onnx.pb.h"
@@ -39,6 +40,7 @@ void compute_loop(odla_computation comp) {
   popart::StepIOCallback stepio(input_callback, input_complete_callback,
                                 output_callback, output_complete_callback);
   int i = 0;
+  try{
   while (!comp->is_done()) {
     auto start = std::chrono::steady_clock::now();
     popart::logging::info("This is the {} time for the inference", i++);
@@ -58,6 +60,32 @@ void compute_loop(odla_computation comp) {
     std::chrono::duration<double, std::milli> elapsed_ms = end - start;
     popart::logging::warn("Found new tasks in {} ms.", elapsed_ms.count());
   }
+  } catch (poplar::application_runtime_error& e) {
+    popart::logging::info("Poplar exception application_runtime_error caught:");
+    comp->exception(ODLA_INTERNAL_LOGIC_ERR);
+  } catch (poplar::recoverable_runtime_error& e) {
+    popart::logging::info("Poplar recoverable_runtime_error exception caught");
+    auto action = e.getRecoveryAction();
+    popart::logging::info("need to take action:{}", action);
+    if (action == poplar::RecoveryAction::IPU_RESET) {
+      comp->exception(ODLA_RECOVERABLE_ERR);
+    } else if (action == poplar::RecoveryAction::PARTITION_RESET) {
+      comp->exception(ODLA_PARTITION_RESET);
+    } else if (action == poplar::RecoveryAction::FULL_RESET) {
+      comp->exception(ODLA_FULL_RESET);
+    }
+  } catch (poplar::unrecoverable_runtime_error& e) {
+    popart::logging::info(
+        "Poplar unrecoverable_runtime_error exception caught");
+    comp->exception(ODLA_UNRECOVERABLE_ERR);
+  } catch (poplar::unknown_runtime_error& e) {
+    popart::logging::info("Poplar unknown runtime exception caught}");
+    comp->exception(ODLA_UNRECOVERABLE_ERR);
+  } catch (...) {
+    popart::logging::info("Poplar unknown exception caught");
+    comp->exception(ODLA_UNRECOVERABLE_ERR);
+  }
+                                                                                
   popart::logging::warn("The pipeline loop finished");
   comp->thread_done();
 }
@@ -104,7 +132,8 @@ void _odla_computation::init() {
 
       // Create InferenceSession
       auto new_session = popart::InferenceSession::createFromOnnxModel(
-          proto, data_flow, device, popart::InputShapeInfo(), session_opts_);
+          proto, data_flow, device, popart::InputShapeInfo(), session_opts_);//,
+		  //popart::Patterns().enablePattern("ResidualAddInPlacePattern", true));
       new_session->prepareDevice();
       new_session->setRandomSeed(0);  // Init seed
       new_session->weightsFromHost(); // Copy weights from host to IPU
@@ -184,6 +213,7 @@ void _odla_computation::set_session_opts() {
   session_opts_.outlineThreshold = 10.0;
   session_opts_.instrumentWithHardwareCycleCounter = false;
   session_opts_.disableGradAccumulationTensorStreams = true;
+  //session_opts_.rearrangeAnchorsOnHost = false;
 }
 
 bool _odla_computation::hold() {
