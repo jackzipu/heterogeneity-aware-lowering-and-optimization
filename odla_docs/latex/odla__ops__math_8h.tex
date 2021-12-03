@@ -36,6 +36,8 @@
 \item 
 \mbox{\hyperlink{odla__common_8h_a1f9123e77ab174e483a7f307eb9c264e}{ODLA\+\_\+\+API\+\_\+\+EXPORT}} \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} ODLA\+\_\+\+API\+\_\+\+CALL \mbox{\hyperlink{odla__ops__math_8h_a2f66ac605cfff97cc84fd55a143829e7}{odla\+\_\+\+Div}} (\mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} lhs, \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} rhs, const \mbox{\hyperlink{odla__value_8h_a875459af53aca134ae1b1d82e971ec82}{odla\+\_\+value\+\_\+id}} value\+\_\+id)
 \begin{DoxyCompactList}\small\item\em Division. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{odla__common_8h_a1f9123e77ab174e483a7f307eb9c264e}{ODLA\+\_\+\+API\+\_\+\+EXPORT}} \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} ODLA\+\_\+\+API\+\_\+\+CALL \mbox{\hyperlink{odla__ops__math_8h_a892b22914ba79c2d9568622a142cef09}{odla\+\_\+\+Einsum}} (\mbox{\hyperlink{structodla__values}{odla\+\_\+values}} inputs, const \mbox{\hyperlink{odla__common_8h_a70ab5c97f8e2150ab1c252e6fa33d38b}{odla\+\_\+char}} $\ast$equation, \mbox{\hyperlink{structodla__value__shape}{odla\+\_\+value\+\_\+shape}} output\+\_\+dims, const \mbox{\hyperlink{odla__value_8h_a875459af53aca134ae1b1d82e971ec82}{odla\+\_\+value\+\_\+id}} value\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Compute Einstein summation. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{odla__common_8h_a1f9123e77ab174e483a7f307eb9c264e}{ODLA\+\_\+\+API\+\_\+\+EXPORT}} \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} ODLA\+\_\+\+API\+\_\+\+CALL \mbox{\hyperlink{odla__ops__math_8h_a5b3d35b37229339f8023031a8a3ec47a}{odla\+\_\+\+Erf}} (\mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} input, const \mbox{\hyperlink{odla__value_8h_a875459af53aca134ae1b1d82e971ec82}{odla\+\_\+value\+\_\+id}} value\+\_\+id)
 \begin{DoxyCompactList}\small\item\em Compute guass error of the given input. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{odla__common_8h_a1f9123e77ab174e483a7f307eb9c264e}{ODLA\+\_\+\+API\+\_\+\+EXPORT}} \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} ODLA\+\_\+\+API\+\_\+\+CALL \mbox{\hyperlink{odla__ops__math_8h_ad898d28379ac0415aec9692c718de7f7}{odla\+\_\+\+Equal}} (\mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} lhs, \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} rhs, const \mbox{\hyperlink{odla__value_8h_a875459af53aca134ae1b1d82e971ec82}{odla\+\_\+value\+\_\+id}} value\+\_\+id)
@@ -595,6 +597,30 @@ Div returns the element-\/wise binary division of {\ttfamily lhs} and {\ttfamily
 {\em lhs} & the first value \\
 \hline
 {\em rhs} & the second value \\
+\hline
+{\em value\+\_\+id} & a unique value id (can be NULL)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+odla\+\_\+value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{odla__ops__math_8h_a892b22914ba79c2d9568622a142cef09}\label{odla__ops__math_8h_a892b22914ba79c2d9568622a142cef09}} 
+\index{odla\_ops\_math.h@{odla\_ops\_math.h}!odla\_Einsum@{odla\_Einsum}}
+\index{odla\_Einsum@{odla\_Einsum}!odla\_ops\_math.h@{odla\_ops\_math.h}}
+\doxysubsubsection{\texorpdfstring{odla\_Einsum()}{odla\_Einsum()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{odla__common_8h_a1f9123e77ab174e483a7f307eb9c264e}{ODLA\+\_\+\+API\+\_\+\+EXPORT}} \mbox{\hyperlink{odla__value_8h_ace8591dbfa7d6ec7c38533286be8490b}{odla\+\_\+value}} ODLA\+\_\+\+API\+\_\+\+CALL odla\+\_\+\+Einsum (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structodla__values}{odla\+\_\+values}}}]{inputs,  }\item[{const \mbox{\hyperlink{odla__common_8h_a70ab5c97f8e2150ab1c252e6fa33d38b}{odla\+\_\+char}} $\ast$}]{equation,  }\item[{\mbox{\hyperlink{structodla__value__shape}{odla\+\_\+value\+\_\+shape}}}]{output\+\_\+dims,  }\item[{const \mbox{\hyperlink{odla__value_8h_a875459af53aca134ae1b1d82e971ec82}{odla\+\_\+value\+\_\+id}}}]{value\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+Compute Einstein summation. 
+
+Einsum returns the Einstein summation convention on the inputs. 
+\begin{DoxyParams}{Parameters}
+{\em inputs} & the input values \\
+\hline
+{\em equation} & the expression \\
+\hline
+{\em output\+\_\+dims} & the optional output shape (can be undefined) \\
 \hline
 {\em value\+\_\+id} & a unique value id (can be NULL)\\
 \hline
